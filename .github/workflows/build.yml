@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: Build for ${{ matrix.platform }}
-    runs-on: windows-latest
+    runs-on: windows-2019
     strategy:
       matrix:
         platform: [x86, x64,arm64]
