@@ -20,10 +20,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+      - name: Download 4.6.1 targeting pack
+        uses: suisei-cn/actions-download-file@v1
         with:
-          dotnet-version: '4.x'
+         url:      "https://download.microsoft.com/download/F/1/D/F1DEB8DB-D277-4EF9-9F48-3A65D4D8F965/NDP461-DevPack-KB3105179-ENU.exe"
+       target: public/
+
+       - name: Install targeting pack
+        shell: cmd
+          run: public/NDP461-DevPack-KB3105179-ENU.exe /q
 
       # - name: Restore NuGet packages
       #   run: nuget restore ClashDotNetFramework.sln
