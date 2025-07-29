@@ -18,13 +18,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
       - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1
+        uses: NuGet/setup-nuget@v2.0.0
 
       - name: Restore NuGet packages
         run: nuget restore ClashDotNetFramework.sln
@@ -33,7 +33,7 @@ jobs:
         run: msbuild ClashDotNetFramework.sln /p:Configuration=Release /p:Platform="${{ matrix.platform }}"
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ClashDotNet-${{ matrix.platform }}-${{ github.event.inputs.version }}
           path: ClashDotNetFramework/bin/${{ matrix.platform }}/Release/
