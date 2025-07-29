@@ -10,30 +10,28 @@ on:
 
 jobs:
   build:
-    name: Build for ${{ matrix.platform }}
     runs-on: windows-latest
     strategy:
       matrix:
-        platform: [x86, x64]
-
+        version: ${{ fromJson('["' + github.event.inputs.versions | replace(',', '","') + '"]') }}
+        arch: [ x86, x64, arm64 ]
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
 
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v2.0.0
+      - name: Restore & Build & Publish
+        run: |
+          dotnet restore ClashDotNetFramework.sln
+          dotnet build ClashDotNetFramework.sln -c Release --no-restore
+          dotnet publish ClashDotNetFramework.sln -c Release -r win-${{ matrix.arch }} --self-contained false -o output/${{ matrix.version }}_${{ matrix.arch }}
 
-      # - name: Restore NuGet packages
-      #   run: nuget restore ClashDotNetFramework.sln
-
-      - name: Build ${{ matrix.platform }}
-        run: msbuild ClashDotNetFramework.sln /p:Configuration=Release /p:Platform="${{ matrix.platform }}"
-
-      - name: Upload Build Artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ClashDotNet-${{ matrix.platform }}-${{ github.event.inputs.version }}
-          path: ClashDotNetFramework/bin/${{ matrix.platform }}/Release/
+          name: artifact-${{ matrix.version }}-${{ matrix.arch }}
+          path: output/${{ matrix.version }}_${{ matrix.arch }}/**
