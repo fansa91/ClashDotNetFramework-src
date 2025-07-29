@@ -1,0 +1,39 @@
+name: Manual Build - Multi-Platform
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号（如 v1.2.3）'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  build:
+    name: Build for ${{ matrix.platform }}
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [x86, x64, arm64]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1
+
+      - name: Restore NuGet packages
+        run: nuget restore ClashDotNetFramework.sln
+
+      - name: Build ${{ matrix.platform }}
+        run: msbuild ClashDotNetFramework.sln /p:Configuration=Release /p:Platform="${{ matrix.platform }}"
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ClashDotNet-${{ matrix.platform }}-${{ github.event.inputs.version }}
+          path: ClashDotNetFramework/bin/${{ matrix.platform }}/Release/
