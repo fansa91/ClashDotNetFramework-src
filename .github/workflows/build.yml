@@ -32,7 +32,7 @@ jobs:
         run: |
           dotnet restore ClashDotNetFramework.sln
           dotnet build ClashDotNetFramework.sln -c Release --no-restore
-          dotnet publish ClashDotNetFramework.sln -c Release -r win-${{ matrix.arch }} --self-contained false -o output/${{ matrix.version }}_${{ matrix.arch }
+          dotnet publish ClashDotNetFramework.sln -c Release -r win-${{ matrix.arch }} --self-contained false -o output/${{ matrix.version }}_${{ matrix.arch }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
